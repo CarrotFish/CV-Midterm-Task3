@@ -2,6 +2,16 @@ import os
 from PIL import Image
 import torch
 from torch.utils.data import Dataset
+from torchvision import datasets
+
+def download(data_dir='./data'):
+    print(f"正在加载/下载 Oxford-IIIT Pet 数据集至 {data_dir}...")
+    full_dataset = datasets.OxfordIIITPet(
+        root=data_dir,
+        split='trainval',      
+        target_types='category',
+        download=True           
+    )
 
 class OxfordPetDataset(Dataset):
     def __init__(self, root_dir, mode='train', transforms=None):
@@ -17,6 +27,8 @@ class OxfordPetDataset(Dataset):
         
         self.image_dir = os.path.join(root_dir, 'images')
         self.mask_dir = os.path.join(root_dir, 'annotations', 'trimaps')
+
+        if not os.path.exists(self.root_dir): download(os.path.dirname(self.root_dir))
         
         # Oxford Pet 数据集的官方划分文件
         # 我们使用 trainval.txt 作为训练集，test.txt 作为验证/测试集
